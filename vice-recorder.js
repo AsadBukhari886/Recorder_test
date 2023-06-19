@@ -2,12 +2,15 @@
 const display = document.querySelector('.display')
 const controllerWrapper = document.querySelector('.controllers')
 
+// Audio
+const audio = new Audio("music.mp3")
+
 const State = ['Initial', 'Record', 'Download']
 let stateIndex = 0
 let mediaRecorder, chunks = [], audioURL = ''
 
 // mediaRecorder setup for audio
-if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     console.log('mediaDevices supported..')
 
     navigator.mediaDevices.getUserMedia({
@@ -20,16 +23,16 @@ if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
         }
 
         mediaRecorder.onstop = () => {
-            const blob = new Blob(chunks, {'type': 'audio/ogg; codecs=opus'})
+            const blob = new Blob(chunks, { 'type': 'audio/ogg; codecs=opus' })
             chunks = []
             audioURL = window.URL.createObjectURL(blob)
             document.querySelector('audio').src = audioURL
 
         }
     }).catch(error => {
-        console.log('Following error has occured : ',error)
+        console.log('Following error has occured : ', error)
     })
-}else{
+} else {
     stateIndex = ''
     application(stateIndex)
 }
@@ -94,12 +97,15 @@ const application = (index) => {
         case 'Record':
             clearDisplay()
             clearControls()
+            audio.play();
 
             addMessage('Recording...')
             addButton('stop', 'stopRecording()', 'Stop Recording')
             break
 
         case 'Download':
+            audio.pause();
+            audio.currentTime = 0
             clearControls()
             clearDisplay()
 
@@ -118,3 +124,4 @@ const application = (index) => {
 }
 
 application(stateIndex)
+
